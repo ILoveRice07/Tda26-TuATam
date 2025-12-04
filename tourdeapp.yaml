@@ -1,0 +1,11 @@
+exposedPort: 5000 
+
+build:
+  - name: flask-web
+    context: .
+    dockerfile: ./Dockerfile
+
+containers:
+  - name: flask-web
+    image: registry.tourde.cloud/tu-a-tam-7440/flask-web
+    port: 5000 

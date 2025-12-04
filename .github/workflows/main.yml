@@ -1,0 +1,21 @@
+
+name: CI/CD - Tour de Cloud Deployment
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v4
+      
+    - name: Deploy to Tour de Cloud
+      uses: Student-Cyber-Games/upload-app@b108036921e01a01fcd471f86c2e301d514d823a
+      with:
+        tdc_token: ${{ secrets.TDC_TOKEN }}
+        tdc_slug: <tu-a-tam-7440> 
+        tdc_config_path: tourdeapp.yaml
