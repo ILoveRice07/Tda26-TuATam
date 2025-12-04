@@ -7,5 +7,5 @@ build:
 
 containers:
   - name: flask-web
-    image: registry.tourde.cloud/<tu-a-tam-7440>/flask-web
+    image: registry.tourde.cloud/tu-a-tam-7440/flask-web
     port: 5000 
