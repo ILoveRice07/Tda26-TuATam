@@ -16,3 +16,6 @@ def api_endpoint():
 @app.route('/courses')
 def courses():
     return render_template('courses.html')
+
+#if __name__ == __name__:
+    #app.run()
