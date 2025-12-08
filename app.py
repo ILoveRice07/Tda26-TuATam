@@ -6,7 +6,7 @@ app = Flask(__name__)
 def index():
     return render_template('index.html')
 
-@app.route('/api', methods=['GET'])
+@app.route('/api', methods=['GET'], strict_slashes=False) 
 def api_endpoint():
     response = {
         "organization": "Student Cyber Games"
