@@ -13,4 +13,6 @@ def api_endpoint():
     }
     return jsonify(response)
 
-
+@app.route('/courses')
+def courses():
+    return render_template('courses.html')
