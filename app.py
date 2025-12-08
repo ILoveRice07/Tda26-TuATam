@@ -17,5 +17,9 @@ def api_endpoint():
 def courses():
     return render_template('courses.html')
 
-#if __name__ == __name__:
-    #app.run()
+@app.route('/login')
+def login():
+    return render_template('login.html')
+
+if __name__ == __name__:
+    app.run()

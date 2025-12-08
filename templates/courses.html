@@ -1,15 +1,16 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Courses</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='styles-courses.css') }}">
-</head>
-<body>
-    <div class="header">
+{% extends "base.html" %}
 
-    </div>
-    <h1>Courses</h1>
+{% block title %}Course Catalog | Tour de App{% endblock %}
 
-</body>
-</html>
+{% block content %}
+    <h1 class="mb-4">Available Courses</h1>
+    
+    <form class="d-flex mb-4" role="search">
+      <input class="form-control me-2" type="search" placeholder="Search by course name..." aria-label="Search">
+      <button class="btn btn-primary" type="submit">Search</button>
+    </form>
+
+    <div class="row">
+        </div>
+
+{% endblock %}
