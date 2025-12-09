@@ -75,6 +75,35 @@ def create_course():
     db.session.commit()
     return jsonify(new_course.to_summary_json()), 201
 
+@app.route('/api/courses/<course_uuid>', methods=['PUT'])
+@login_required
+def update_course(course_uuid):
+    course = Course.query.filter_by(uuid=course_uuid).first()
+    if course is None:
+        return jsonify({"message": "Course not found"}), 404
+    
+    data = request.get_json()
+
+    if 'name' in data:
+        course.name = data['name']
+
+    if 'description' in data:
+        course.description = data['description']
+
+    db.session.commit()
+
+    return jsonify(course.to_summary_json()), 200
+
+@app.route('/api/courses/<course_uuid>', methods=['DELETE'])
+@login_required
+def delete_course(course_uuid):
+    course = Course.query.filter_by(uuid=course_uuid).first()
+    if course is None:
+        return jsonify({"message": "Course not found"}), 404
+    db.session.delete(course)
+    db.session.commit()
+    return '', 204
+
 LECTURER_USERNAME = "lecturer"
 LECTURER_PASSWORD = "TdA26!"
 
