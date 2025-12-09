@@ -1,4 +1,5 @@
-from flask import Flask, jsonify, render_template, request
+from flask import Flask, jsonify, render_template, request, redirect, url_for
+from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 import uuid
 from flask_sqlalchemy import SQLAlchemy
 import datetime
@@ -6,10 +7,16 @@ import os
 
 app = Flask(__name__)
 
+app.config['SECRET_KEY'] = 'a_very_secret_and_long_key'
+
 basedir = os.path.abspath(os.path.dirname(__file__))
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, 'courses.db')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
+
+login_manager = LoginManager()
+login_manager.init_app(app)
+login_manager.login_view = 'login'
 
 class Course(db.Model):
     uuid = db.Column(db.String, primary_key=True, default=lambda: str(uuid.uuid4()))
@@ -50,10 +57,6 @@ def api_endpoint():
 def courses():
     return render_template('courses.html')
 
-@app.route('/login')
-def login():
-    return render_template('login.html')
-
 @app.route('/api/courses', methods=['GET'])
 def list_courses():
     courses = Course.query.all()
@@ -71,3 +74,46 @@ def create_course():
     db.session.add(new_course)
     db.session.commit()
     return jsonify(new_course.to_summary_json()), 201
+
+LECTURER_USERNAME = "lecturer"
+LECTURER_PASSWORD = "TdA26!"
+
+class User(UserMixin):
+    def __init__(self, id):
+        self.id = id
+        self.username = LECTURER_USERNAME
+        
+    def get_id(self):
+        return str(self.id)
+    
+@login_manager.user_loader
+def load_user(user_id):
+    if user_id == '1':
+        return User(id=1)
+    return None
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if current_user.is_authenticated:
+        return redirect(url_for('dashboard'))
+    if request.method == 'POST':
+        email = request.form.get('email')
+        password = request.form.get('password')
+
+        if email == LECTURER_USERNAME and password == LECTURER_PASSWORD:
+            user = User(id=1) 
+            login_user(user)
+            return redirect(url_for('dashboard'))
+        else:
+            return render_template('login.html', error="Invalid username or password.")
+    return render_template('login.html')
+
+@app.route('/logout')
+def logout():
+    logout_user()
+    return redirect(url_for('index'))
+
+@app.route('/dashboard')
+@login_required
+def dashboard():
+    return render_template('dashboard.html', username=current_user.username)

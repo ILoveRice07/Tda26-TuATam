@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block title %}Lecturer Dashboard{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1 class="mb-4">Welcome to the Dashboard, {{ username }}!</h1>
+    <p class="lead">From here, you can manage your courses and content.</p>
+
+    <div class="card p-3 mb-3">
+        <h3>Course Administration</h3>
+        <button class="btn btn-success">Create New Course</button>
+    </div>
+    
+    <a href="{{ url_for('logout') }}" class="btn btn-danger">Log Out</a>
+</div>
+{% endblock %}
