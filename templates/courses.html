@@ -6,11 +6,54 @@
     <h1 class="mb-4">Available Courses</h1>
     
     <form class="d-flex mb-4" role="search">
-      <input class="form-control me-2" type="search" placeholder="Search by course name..." aria-label="Search">
+      <input class="form-control me-2" type="search" id="course-search-input" placeholder="Search by course name..." aria-label="Search">
       <button class="btn btn-primary" type="submit">Search</button>
     </form>
 
-    <div class="row">
-        </div>
+    <div class="row" id="course-list-container">
+        <p id="loading-message">Loading course catalog...</p>
+    </div>
 
+<script>
+    async function fetchAndRenderCourses() {
+        const container = document.getElementById('course-list-container');
+        
+        try {
+            const response = await fetch('/api/courses');
+            
+            if (!response.ok) {
+                throw new Error(`API call failed with status: ${response.status}`);
+            }
+            const courses = await response.json();
+            
+            container.innerHTML = ''; 
+
+            if (courses.length === 0) {
+                container.innerHTML = '<p class="text-muted">No courses are currently available.</p>';
+                return;
+            }
+
+            courses.forEach(course => {
+                const courseCard = document.createElement('div');
+                courseCard.className = 'col-md-4 mb-4'; 
+
+                courseCard.innerHTML = `
+                    <div class="card h-100 shadow-sm">
+                        <div class="card-body">
+                            <h5 class="card-title">${course.name}</h5> 
+                            <p class="card-text">${course.description || 'No description provided.'}</p> 
+                            
+                            <a href="/courses/${course.uuid}" class="btn btn-sm btn-primary mt-2">View Course</a>
+                        </div>
+                    </div>
+                `;
+                container.appendChild(courseCard);
+            });
+        } catch (error) {
+            console.error("Error fetching courses:", error);
+            container.innerHTML = `<p class="alert alert-danger">An error occurred loading the courses.</p>`;
+        }
+    }
+    fetchAndRenderCourses();
+</script>
 {% endblock %}
