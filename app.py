@@ -5,6 +5,8 @@ from flask_sqlalchemy import SQLAlchemy
 import datetime
 import os
 
+#------- IMPORTS -------#
+
 app = Flask(__name__)
 
 app.config['SECRET_KEY'] = 'a_very_secret_and_long_key'
@@ -41,6 +43,8 @@ with app.app_context():
         sample_course = Course(name="Introduction to Web Development", description="Learn the basics of HTML, CSS, and Flask.")
         db.session.add(sample_course)
         db.session.commit()
+
+#------- APP CONFIG + DATABASE CONFIG + LOGIN MANAGER -------#
 
 @app.route('/')
 def index():
