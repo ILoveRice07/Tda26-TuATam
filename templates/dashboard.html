@@ -5,13 +5,198 @@
 {% block content %}
 <div class="container mt-4">
     <h1 class="mb-4">Welcome to the Dashboard, {{ username }}!</h1>
-    <p class="lead">From here, you can manage your courses and content.</p>
+    <p class="lead">Manage your course catalog below.</p>
 
-    <div class="card p-3 mb-3">
-        <h3>Course Administration</h3>
-        <button class="btn btn-success">Create New Course</button>
+    <div class="d-flex justify-content-end mb-4">
+        <button class="btn btn-success" type="button" data-bs-toggle="collapse" data-bs-target="#createCourseFormCollapse" aria-expanded="false" aria-controls="createCourseFormCollapse">
+            + Create New Course
+        </button>
     </div>
-    
-    <a href="{{ url_for('logout') }}" class="btn btn-danger">Log Out</a>
+
+    <div class="collapse mb-4" id="createCourseFormCollapse">
+        <div class="card card-body">
+            <h3>Create New Course</h3>
+            <form id="create-course-form">
+                <div class="mb-3">
+                    <label for="new-course-name" class="form-label">Course Name</label>
+                    <input type="text" class="form-control" id="new-course-name" name="name" required>
+                </div>
+                <div class="mb-3">
+                    <label for="new-course-description" class="form-label">Description</label>
+                    <textarea class="form-control" id="new-course-description" name="description" rows="3"></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary">Create Course</button>
+                <div id="create-message" class="mt-2"></div>
+            </form>
+        </div>
+    </div>
+
+    <hr>
+    <h3 class="mb-3">Existing Courses</h3>
+    <div id="course-management-list" class="list-group">
+        <p id="loading-message" class="text-muted">Loading courses...</p>
+    </div>
 </div>
+
+<script>
+    const API_URL = '/api/courses';
+    const courseListContainer = document.getElementById('course-management-list');
+    const createForm = document.getElementById('create-course-form');
+    const createMessage = document.getElementById('create-message');
+
+    // --- HELPER FUNCTIONS ---
+
+    async function fetchAndRenderCourses() {
+        courseListContainer.innerHTML = '<p class="text-muted">Loading courses...</p>';
+        try {
+            const response = await fetch(API_URL);
+            if (!response.ok) {
+                throw new Error('Failed to fetch courses. Are you logged in?');
+            }
+            const courses = await response.json();
+            courseListContainer.innerHTML = ''; 
+
+            if (courses.length === 0) {
+                courseListContainer.innerHTML = '<p class="text-muted">No courses found. Create one above!</p>';
+                return;
+            }
+
+            courses.forEach(course => {
+                const item = document.createElement('div');
+                item.className = 'list-group-item list-group-item-action mb-2 shadow-sm';
+                item.id = `course-item-${course.uuid}`;
+
+                item.innerHTML = `
+                    <div class="d-flex w-100 justify-content-between">
+                        <h5 class="mb-1">${course.name}</h5>
+                        <small class="text-muted">UUID: ${course.uuid.substring(0, 8)}...</small>
+                    </div>
+                    <p class="mb-1 course-description">${course.description}</p>
+                    <div class="mt-2">
+                        <button class="btn btn-sm btn-info edit-btn" data-uuid="${course.uuid}" data-name="${course.name}" data-description="${course.description}">Edit</button>
+                        <button class="btn btn-sm btn-danger delete-btn" data-uuid="${course.uuid}">Delete</button>
+                        <small class="text-muted ms-3">Updated: ${new Date(course.updatedAt).toLocaleDateString()}</small>
+                    </div>
+                `;
+                courseListContainer.appendChild(item);
+            });
+
+            attachEventListeners();
+
+        } catch (error) {
+            console.error("Error fetching courses:", error);
+            courseListContainer.innerHTML = `<p class="alert alert-danger">Error: ${error.message}</p>`;
+        }
+    }
+
+    // --- CRUD OPERATIONS ---
+
+    // CREATE (POST /api/courses)
+    createForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const data = {
+            name: document.getElementById('new-course-name').value,
+            description: document.getElementById('new-course-description').value
+        };
+
+        try {
+            const response = await fetch(API_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
+
+            if (response.status === 201) {
+                createMessage.className = 'mt-2 alert alert-success';
+                createMessage.textContent = 'Course created successfully!';
+                createForm.reset();
+                fetchAndRenderCourses(); 
+            } else {
+                const errorData = await response.json();
+                throw new Error(`Failed to create course. Status: ${response.status}. Message: ${errorData.message}`);
+            }
+        } catch (error) {
+            console.error("Create failed:", error);
+            createMessage.className = 'mt-2 alert alert-danger';
+            createMessage.textContent = `Error: ${error.message}`;
+        }
+    });
+
+    // DELETE (/api/courses/{uuid})
+    async function deleteCourse(uuid) {
+        if (!confirm('Are you sure you want to delete this course? This cannot be undone.')) {
+            return;
+        }
+
+        try {
+            const response = await fetch(`${API_URL}/${uuid}`, {
+                method: 'DELETE'
+            });
+
+            if (response.status === 204) { 
+                alert('Course deleted successfully.');
+                document.getElementById(`course-item-${uuid}`).remove();
+            } else if (response.status === 404) {
+                 alert('Error: Course not found.');
+            } else {
+                const errorText = await response.text();
+                throw new Error(`Failed to delete course. Status: ${response.status}. Response: ${errorText}`);
+            }
+        } catch (error) {
+            console.error("Delete failed:", error);
+            alert(`Delete Error: ${error.message}`);
+        }
+    }
+
+    // UPDATE (/api/courses/{uuid})
+    async function updateCourse(uuid, updatedData) {
+        try {
+            const response = await fetch(`${API_URL}/${uuid}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(updatedData)
+            });
+
+            if (response.status === 200) {
+                alert('Course updated successfully!');
+                fetchAndRenderCourses(); 
+            } else if (response.status === 404) {
+                 alert('Error: Course not found.');
+            } else {
+                const errorData = await response.json();
+                throw new Error(`Failed to update course. Status: ${response.status}. Message: ${errorData.message}`);
+            }
+        } catch (error) {
+            console.error("Update failed:", error);
+            alert(`Update Error: ${error.message}`);
+        }
+    }
+    
+    // Handles all dynamic button clicks
+    function attachEventListeners() {
+        document.querySelectorAll('.delete-btn').forEach(button => {
+            button.onclick = () => deleteCourse(button.dataset.uuid);
+        });
+
+        document.querySelectorAll('.edit-btn').forEach(button => {
+            button.onclick = () => {
+                const uuid = button.dataset.uuid;
+                const newName = prompt("Enter new course name:", button.dataset.name);
+                if (newName === null) return; 
+
+                const newDescription = prompt("Enter new course description:", button.dataset.description);
+                if (newDescription === null) return; 
+
+                const updatedData = {
+                    name: newName,
+                    description: newDescription
+                };
+                updateCourse(uuid, updatedData);
+            };
+        });
+    }
+
+    // Initial load
+    fetchAndRenderCourses();
+</script>
 {% endblock %}
