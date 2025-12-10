@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% block title %}Course Detail{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1 id="course-title">Loading Course...</h1>
+    
+    <div id="course-details">
+        <p>UUID: {{ course_uuid }}</p>
+        <p id="course-description"></p>
+    </div>
+
+    <hr>
+    <a href="{{ url_for('courses') }}" class="btn btn-secondary">← Back to Catalog</a>
+</div>
+
+<script>
+    const courseUuid = '{{ course_uuid }}';
+    const courseTitle = document.getElementById('course-title');
+    const courseDescription = document.getElementById('course-description');
+
+    async function fetchCourseDetails() {
+        try {
+            const response = await fetch(`/api/courses/${courseUuid}`);
+            
+            if (response.status === 404) {
+                courseTitle.textContent = "Error: Course Not Found";
+                return;
+            }
+            if (!response.ok) {
+                 throw new Error(`Failed to fetch course details. Status: ${response.status}`);
+            }
+
+            const course = await response.json();
+            
+            courseTitle.textContent = course.name;
+            courseDescription.textContent = course.description;
+
+        } catch (error) {
+            console.error("Fetch error:", error);
+            courseTitle.textContent = `Error loading details: ${error.message}`;
+        }
+    }
+    fetchCourseDetails();
+</script>
+{% endblock %}

@@ -150,3 +150,7 @@ def logout():
 @login_required
 def dashboard():
     return render_template('dashboard.html', username=current_user.username)
+
+@app.route('/courses/<course_uuid>')
+def course_detail(course_uuid):
+    return render_template('course_detail.html', course_uuid=course_uuid)
