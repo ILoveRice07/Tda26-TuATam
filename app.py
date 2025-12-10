@@ -57,16 +57,17 @@ def api_endpoint():
     }
     return jsonify(response)
 
-@app.route('/courses')
-def courses():
-    return render_template('courses.html')
-
 @app.route('/courses', methods=['GET'])
 def list_courses():
     courses = Course.query.all()
     return jsonify([course.to_summary_json() for course in courses])
 
+@app.route('/courses')
+def courses():
+    return render_template('courses.html')
+
 @app.route('/courses', methods=['POST'])
+@login_required
 def create_course():
     data = request.get_json()
     if not data or 'name' not in data:
