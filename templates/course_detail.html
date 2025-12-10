@@ -22,7 +22,7 @@
 
     async function fetchCourseDetails() {
         try {
-            const response = await fetch(`/api/courses/${courseUuid}`);
+            const response = await fetch(`/courses/${courseUuid}`);
             
             if (response.status === 404) {
                 courseTitle.textContent = "Error: Course Not Found";

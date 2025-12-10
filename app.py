@@ -61,12 +61,12 @@ def api_endpoint():
 def courses():
     return render_template('courses.html')
 
-@app.route('/api/courses', methods=['GET'])
+@app.route('/courses', methods=['GET'])
 def list_courses():
     courses = Course.query.all()
     return jsonify([course.to_summary_json() for course in courses])
 
-@app.route('/api/courses', methods=['POST'])
+@app.route('/courses', methods=['POST'])
 def create_course():
     data = request.get_json()
     if not data or 'name' not in data:
@@ -79,7 +79,7 @@ def create_course():
     db.session.commit()
     return jsonify(new_course.to_summary_json()), 201
 
-@app.route('/api/courses/<course_uuid>', methods=['PUT'])
+@app.route('/courses/<course_uuid>', methods=['PUT'])
 @login_required
 def update_course(course_uuid):
     course = Course.query.filter_by(uuid=course_uuid).first()
@@ -98,7 +98,7 @@ def update_course(course_uuid):
 
     return jsonify(course.to_summary_json()), 200
 
-@app.route('/api/courses/<course_uuid>', methods=['DELETE'])
+@app.route('/courses/<course_uuid>', methods=['DELETE'])
 @login_required
 def delete_course(course_uuid):
     course = Course.query.filter_by(uuid=course_uuid).first()
