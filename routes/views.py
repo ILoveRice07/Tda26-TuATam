@@ -2,6 +2,11 @@ from flask import Blueprint, render_template, redirect, url_for, request
 from flask_login import login_user, logout_user, login_required, current_user
 from models import User
 
+@app.route('/courses', defaults={'path': ''}, methods=['POST', 'PUT', 'DELETE'])
+@app.route('/courses/<path:path>', methods=['POST', 'PUT', 'DELETE'])
+def api_redirect_post_put_delete(path):
+    return redirect(f'/api/courses/{path}', code=307)
+
 views_bp = Blueprint('views', __name__)
 
 LECTURER_USERNAME = "lecturer"
