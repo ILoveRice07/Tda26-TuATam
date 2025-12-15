@@ -8,7 +8,7 @@
         <div class="col-md-6">
             <h1 class="text-center mb-4">Login</h1>
             
-            <form method="POST" action="{{ url_for('login') }}">
+            <form method="POST" action="{{ url_for('views.login') }}">
                 
                 {% if error %}
                     <div class="alert alert-danger" role="alert">
@@ -19,13 +19,13 @@
                 <div class="mb-3">
                     <label for="email" class="form-label">Name</label>
                     <input type="text" class="form-control" id="email" name="email" required 
-                           placeholder="Enter lecturer username">
+                            placeholder="Enter lecturer username">
                 </div>
                 
                 <div class="mb-3">
                     <label for="password" class="form-label">Password</label>
                     <input type="password" class="form-control" id="password" name="password" required 
-                           placeholder="Enter password">
+                            placeholder="Enter password">
                 </div>
                 
                 <button type="submit" class="btn btn-primary w-100">Login</button>
