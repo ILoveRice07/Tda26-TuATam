@@ -38,10 +38,10 @@ def logout():
 def dashboard():
     return render_template('dashboard.html', username=current_user.username)
 
-@views_bp.route('/courses', methods=['GET'])
+@views_bp.route('/courses', methods=['GET','POST'])
 def courses():
     return render_template('courses.html')
 
-@views_bp.route('/courses/<course_uuid>')
+@views_bp.route('/courses/<course_uuid>', methods=['PUT','DELETE','GET'])
 def course_detail(course_uuid):
     return render_template('course_detail.html', course_uuid=course_uuid)
