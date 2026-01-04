@@ -10,12 +10,12 @@ def api_endpoint():
     return jsonify({"organization": "Student Cyber Games"})
 
 
-@api_bp.route('/courses', methods=['GET','POST'])
+@api_bp.route('/courses', methods=['GET'])
 def list_courses():
     courses = Course.query.all()
     return jsonify([course.to_summary_json() for course in courses])
 
-@api_bp.route('/courses', methods=['GET','POST'])
+@api_bp.route('/courses', methods=['POST'])
 @login_required
 def create_course():
     data = request.get_json()
@@ -30,7 +30,7 @@ def create_course():
     db.session.commit()
     return jsonify(new_course.to_summary_json()), 201
 
-@api_bp.route('/courses/<course_uuid>', methods=['GET','POST'])
+@api_bp.route('/courses/<course_uuid>', methods=['GET'])
 def get_course_detail(course_uuid):
     course = Course.query.filter_by(uuid=course_uuid).first()
     if course is None:
