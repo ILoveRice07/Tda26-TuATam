@@ -25,11 +25,11 @@ def load_user(user_id):
         return User(id=1)
     return None
 
-@app.route('/courses', methods=['POST'])
+@app.route('/courses', methods=['GET','POST'])
 def redirect_create_course():
     return redirect(url_for('api.list_courses', **request.args), code=307)
 
-@app.route('/courses/<course_uuid>', methods=['PUT', 'DELETE'])
+@app.route('/courses/<course_uuid>', methods=['GET','PUT', 'DELETE'])
 def redirect_update_delete_course(course_uuid):
     return redirect(url_for('api.get_course_detail', course_uuid=course_uuid, **request.args), code=307)
 
