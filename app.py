@@ -27,7 +27,7 @@ def load_user(user_id):
 
 @app.route('/courses', methods=['POST'])
 def redirect_create_course():
-    return redirect(url_for('api.list_courses', **request.args))
+    return redirect(url_for('api.list_courses', **request.args), code=307)
 
 @app.route('/courses/<course_uuid>', methods=['PUT', 'DELETE'])
 def redirect_update_delete_course(course_uuid):
