@@ -27,11 +27,11 @@ def load_user(user_id):
 
 @app.route('/courses', methods=['POST'])
 def redirect_create_course():
-    return redirect(url_for('api.list_courses', **request.args), code=307)
+    return redirect(url_for('api.list_courses', **request.args))
 
 @app.route('/courses/<course_uuid>', methods=['PUT', 'DELETE'])
 def redirect_update_delete_course(course_uuid):
-    return redirect(url_for('api.get_course_detail', course_uuid=course_uuid, **request.args), code=307)
+    return redirect(url_for('api.get_course_detail', course_uuid=course_uuid, **request.args))
 
 app.register_blueprint(api_bp, url_prefix='/api') 
 app.register_blueprint(views_bp) 
