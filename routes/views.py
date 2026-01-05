@@ -4,7 +4,7 @@ from models import User
 
 views_bp = Blueprint('views', __name__)
 
-LECTURER_USERNAME = "Lecturer"
+LECTURER_USERNAME = "lecturer"
 LECTURER_PASSWORD = "TdA26!"
 
 @views_bp.route('/')
