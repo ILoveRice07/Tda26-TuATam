@@ -22,7 +22,7 @@ class Course(db.Model):
 class User(UserMixin):
     def __init__(self, id):
         self.id = id
-        self.username = "Lecturer"
+        self.username = "lecturer"
     
     def get_id(self):
         return str(self.id)
